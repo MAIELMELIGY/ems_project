@@ -1,12 +1,14 @@
-# employees/views.py
-from rest_framework import viewsets, filters, status
+from rest_framework import viewsets, filters, status, permissions
+from rest_framework.permissions import IsAdminUser, BasePermission
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
-
+from rest_framework import permissions
 from .models import Employee
 from .serializers import EmployeeSerializer
-
+class IsManagerUser(BasePermission):
+    def has_permission(self, request, view):
+        return bool(request.user and request.user.is_authenticated and request.user.role == 'manager')
 class EmployeeViewSet(viewsets.ModelViewSet):
     queryset = Employee.objects.all()
     serializer_class = EmployeeSerializer
@@ -39,11 +41,9 @@ class EmployeeViewSet(viewsets.ModelViewSet):
         """
         Dynamically assign permissions based on the API action.
         """
-        permission_classes = []
-
         if self.action == 'destroy':
             permission_classes = [IsAdminUser]
-        elif self.action in ['create', 'update', 'partial_update']:
+        elif self.action in ['create', 'update', 'partial_update', 'onboard']:
             permission_classes = [IsAdminUser | IsManagerUser]
         else:
             permission_classes = [permissions.IsAuthenticated]
