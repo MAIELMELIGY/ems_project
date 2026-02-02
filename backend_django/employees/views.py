@@ -6,15 +6,30 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import permissions
 from .models import Employee
 from .serializers import EmployeeSerializer
-class IsManagerUser(BasePermission):
-    def has_permission(self, request, view):
-        return bool(request.user and request.user.is_authenticated and request.user.role == 'manager')
+from rest_framework import generics
+from django.contrib.auth import get_user_model
+from .serializers import RegisterSerializer
+from rest_framework.permissions import AllowAny
+import logging
+logger = logging.getLogger(__name__)
+
+from .permissions import IsManagerUser
+User = get_user_model()
+
+
+class RegisterView(generics.CreateAPIView):
+    queryset = User.objects.all()
+    permission_classes = (AllowAny,)
+    serializer_class = RegisterSerializer
+
+
 class EmployeeViewSet(viewsets.ModelViewSet):
     queryset = Employee.objects.all()
     serializer_class = EmployeeSerializer
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     filterset_fields = ['company', 'department', 'status']
     search_fields = ['name', 'email']
+    permission_classes = [IsAdminUser | IsManagerUser]
 
     @action(detail=True, methods=['post'])
     def onboard(self, request, pk=None):
@@ -24,28 +39,20 @@ class EmployeeViewSet(viewsets.ModelViewSet):
         """
         employee = self.get_object()
         target_status = request.data.get('status')
+        user = request.user
 
         try:
+            logger.info(f"User {user.username} (Role: {user.role}) attempting transition to {target_status} for employee ID {pk}")
+
             if target_status == 'interview_scheduled':
                 employee.schedule_interview()
             elif target_status == 'hired':
                 employee.hire()
-            
+
             employee.save()
+            logger.info(f"Successfully transitioned employee {pk} to {employee.status}")
             return Response({'status': f'Employee moved to {employee.status}'})
 
         except Exception as e:
+            logger.error(f"Failed transition for employee {pk} by user {user.username}: {str(e)}")
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-        
-    def get_permissions(self):
-        """
-        Dynamically assign permissions based on the API action.
-        """
-        if self.action == 'destroy':
-            permission_classes = [IsAdminUser]
-        elif self.action in ['create', 'update', 'partial_update', 'onboard']:
-            permission_classes = [IsAdminUser | IsManagerUser]
-        else:
-            permission_classes = [permissions.IsAuthenticated]
-            
-        return [permission() for permission in permission_classes]
