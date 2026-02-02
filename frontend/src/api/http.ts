@@ -15,14 +15,30 @@ http.interceptors.request.use((config) => {
   return config;
 });
 
+// frontend/src/api/http.ts
+
 http.interceptors.response.use(
-  (r) => r,
-  (err) => {
-    const msg =
-      err?.response?.data?.detail ??
-      (typeof err?.response?.data === "object"
-        ? JSON.stringify(err.response.data)
-        : "Unexpected error");
+  (response) => response,
+  async (error) => {
+    const auth = useAuthStore();
+    const originalRequest = error.config;
+
+    // If 401 error and we haven't tried refreshing yet
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+      try {
+        // Call your refresh token endpoint
+        await auth.refreshAccessToken(); 
+        // Update header and retry
+        originalRequest.headers.Authorization = `Bearer ${auth.accessToken}`;
+        return http(originalRequest);
+      } catch (refreshError) {
+        
+        return Promise.reject(refreshError);
+      }
+    }
+
+    const msg = error?.response?.data?.detail ?? "Unexpected error";
     return Promise.reject(new Error(msg));
   }
 );

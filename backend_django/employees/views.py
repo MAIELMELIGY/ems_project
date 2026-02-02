@@ -13,7 +13,7 @@ from rest_framework.permissions import AllowAny
 import logging
 logger = logging.getLogger(__name__)
 
-from .permissions import IsManagerUser
+from users.permissions import IsManagerOrAdmin
 User = get_user_model()
 
 
@@ -29,7 +29,7 @@ class EmployeeViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     filterset_fields = ['company', 'department', 'status']
     search_fields = ['name', 'email']
-    permission_classes = [IsAdminUser | IsManagerUser]
+    permission_classes = [IsManagerOrAdmin]
 
     @action(detail=True, methods=['post'])
     def onboard(self, request, pk=None):

@@ -53,7 +53,7 @@ export const useAuthStore = defineStore("auth", {
 
       // Minimal placeholder: default role if you don't have /me yet.
       // Replace with real role fetch (recommended).
-      this.role = this.role ?? "employee";
+      // this.role = this.role ?? "employee";
 
       this.persist();
     },
