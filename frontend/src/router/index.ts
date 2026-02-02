@@ -10,12 +10,22 @@ const routes = [
   { path: "/companies/:id", name: "company-detail", component: () => import("@/views/CompanyDetailView.vue"), meta: { auth: true } },
 
   { path: "/departments", name: "departments", component: () => import("@/views/DepartmentListView.vue"), meta: { auth: true } },
-
+  { path: "/departments/:id", name: "department-detail", component: () => import("@/views/DepartmentDetailView.vue"), meta: { auth: true } },
   { path: "/employees", name: "employees", component: () => import("@/views/EmployeeListView.vue"), meta: { auth: true } },
   { path: "/employees/new", name: "employee-create", component: () => import("@/views/EmployeeCreateView.vue"), meta: { auth: true, write: true } },
   { path: "/employees/:id", name: "employee-detail", component: () => import("@/views/EmployeeDetailView.vue"), meta: { auth: true } },
   { path: "/employees/:id/edit", name: "employee-edit", component: () => import("@/views/EmployeeEditView.vue"), meta: { auth: true, write: true } },
+  {
+  path: "/reports/employees",
+  name: "employee-report",
+  component: () => import("@/views/EmployeeReportView.vue"),
+  meta: { auth: true }
+},
+  {path: "/dashboard",name:"dashboard-list",component:()=>import("@/views/DashboardListView.vue"),meta:{auth:true}
+},
+
 ];
+
 
 export const router = createRouter({
   history: createWebHistory(),

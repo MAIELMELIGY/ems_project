@@ -49,7 +49,7 @@ async function remove(id: number) {
     await deleteCompany(id);
     await load();
   } catch (e: any) {
-    error.value = e.message; // will show PROTECT errors too
+    error.value = e.message;
   } finally {
     loading.value = false;
   }

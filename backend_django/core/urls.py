@@ -27,9 +27,6 @@ urlpatterns = [
     path('api/auth/register/', RegisterView.as_view(), name='auth_register'),
     path('api/auth/profile/', ProfileView.as_view(), name='auth_profile'),
 
-    # Interactive Swagger UI
     path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
-    
-    # Optional: Redoc UI (often preferred for technical documentation)
     path('api/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
 ]

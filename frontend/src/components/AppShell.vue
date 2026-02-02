@@ -20,9 +20,11 @@ function logout() {
     <header class="topbar">
       <div class="brand">EMS</div>
       <nav v-if="showNav" class="nav">
+        <RouterLink to="/dashboard">Dashboard</RouterLink>
         <RouterLink to="/companies">Companies</RouterLink>
         <RouterLink to="/departments">Departments</RouterLink>
         <RouterLink to="/employees">Employees</RouterLink>
+        <RouterLink to="/reports/employees">Hired Report</RouterLink>
       </nav>
 
       <div class="right">

@@ -20,6 +20,11 @@ export async function getEmployee(id: number): Promise<Employee> {
   const res = await http.get(`/employees/${id}/`);
   return res.data;
 }
+// frontend/src/api/employees.ts
+export async function getHiredReport(): Promise<Employee[]> {
+  const res = await http.get("/employees/hired_report/");
+  return res.data; 
+}
 
 export async function createEmployee(payload: Partial<Employee>): Promise<Employee> {
   const res = await http.post("/employees/", payload);

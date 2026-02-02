@@ -44,26 +44,30 @@ class EmployeeViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post'])
     def onboard(self, request, pk=None):
-        """
-        Custom action to transition an employee's status.
-        Accessible at: /api/employees/{id}/onboard/
-        """
         employee = self.get_object()
-        target_status = request.data.get('status')
-        user = request.user
-
+        target_status = request.data.get('status') 
+        
         try:
-            logger.info(f"User {user.username} (Role: {user.role}) attempting transition to {target_status} for employee ID {pk}")
-
             if target_status == 'interview_scheduled':
-                employee.schedule_interview()
+                employee.schedule_interview() 
             elif target_status == 'hired':
-                employee.hire()
+                employee.hire() 
+            elif target_status == 'not_accepted':
+                employee.status = 'not_accepted' 
+            else:
+                return Response({'error': 'Invalid status requested'}, status=status.HTTP_400_BAD_REQUEST)
 
             employee.save()
-            logger.info(f"Successfully transitioned employee {pk} to {employee.status}")
-            return Response({'status': f'Employee moved to {employee.status}'})
+            return Response({'status': f'Employee moved to {employee.status}', 'current_status': employee.status})
 
         except Exception as e:
-            logger.error(f"Failed transition for employee {pk} by user {user.username}: {str(e)}")
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    @action(detail=False, methods=['get'], permission_classes=[permissions.IsAuthenticated])
+    def hired_report(self, request):
+        """
+        Returns a list of all employees with 'hired' status for reporting.
+        """
+        hired_employees = Employee.objects.filter(status='hired')
+        
+        serializer = self.get_serializer(hired_employees, many=True)
+        return Response(serializer.data)

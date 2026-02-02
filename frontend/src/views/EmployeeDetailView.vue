@@ -28,19 +28,22 @@ async function load() {
   }
 }
 
-async function act(action: "schedule_interview" | "reject" | "hire") {
+async function act(targetStatus: "interview_scheduled" | "not_accepted" | "hired") {
   if (!item.value) return;
   loading.value = true;
   error.value = null;
+  
   try {
-    const payload: any = { action };
-    if (action === "hire") {
+    const payload: any = { status: targetStatus }; 
+    
+    if (targetStatus === "hired") {
       const date = prompt("Hired on (YYYY-MM-DD) leave empty for today:", "");
       if (date?.trim()) payload.hired_on = date.trim();
     }
+    
     item.value = await transitionEmployee(item.value.id, payload);
   } catch (e: any) {
-    error.value = e.message;
+    error.value = e.response?.data?.error || e.message;
   } finally {
     loading.value = false;
   }
@@ -74,22 +77,29 @@ onMounted(load);
     <div><b>Hired on:</b> {{ item.hired_on ?? "-" }}</div>
     <div><b>Days employed:</b> {{ item.days_employed ?? "-" }}</div>
     <div><b>Address:</b> {{ item.address || "-" }}</div>
+    <div><b>status:</b> {{ item.status || "-" }}</div>
+
   </div>
 
-  <div v-if="item && auth.canWrite" class="actions">
-    <h3>Workflow</h3>
-    <div class="row">
-      <button class="btn" :disabled="!canSchedule || loading" @click="act('schedule_interview')">
-        Schedule Interview
-      </button>
-      <button class="btn" :disabled="!(canRejectFromApplication || canHireOrRejectFromInterview) || loading" @click="act('reject')">
-        Reject
-      </button>
-      <button class="btn" :disabled="!canHireOrRejectFromInterview || loading" @click="act('hire')">
-        Hire
-      </button>
-    </div>
+<div v-if="item && auth.canWrite" class="actions">
+  <h3>Workflow</h3>
+  <div class="row">
+    <button class="btn" :disabled="!canSchedule || loading" 
+            @click="act('interview_scheduled')">
+      Schedule Interview
+    </button>
+    
+    <button class="btn" :disabled="!(canRejectFromApplication || canHireOrRejectFromInterview) || loading" 
+            @click="act('not_accepted')">
+      Reject
+    </button>
+    
+    <button class="btn" :disabled="!canHireOrRejectFromInterview || loading" 
+            @click="act('hired')">
+      Hire
+    </button>
   </div>
+</div>
 </template>
 
 <style scoped>
