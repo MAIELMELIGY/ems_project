@@ -68,8 +68,8 @@ onMounted(async () => {
     <label>Email</label>
     <input v-model="form.email" @input="update" type="email" required />
 
-    <label>Mobile</label>
-    <input v-model="form.mobile" @input="update" required placeholder="+123456789" />
+    <label>mobile_number</label>
+    <input v-model="form.mobile_number" @input="update" required placeholder="+123456789" />
 
     <label>Designation</label>
     <input v-model="form.designation" @input="update" required />

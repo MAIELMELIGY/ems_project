@@ -2,7 +2,7 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from organizations.views import CompanyViewSet, DepartmentViewSet
-from employees.views import EmployeeViewSet , RegisterView
+from employees.views import EmployeeViewSet , RegisterView ,ProfileView
 from django.contrib import admin
 from drf_spectacular.views import (
     SpectacularAPIView, 
@@ -25,6 +25,7 @@ urlpatterns = [
     path('api/auth/login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/auth/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/auth/register/', RegisterView.as_view(), name='auth_register'),
+    path('api/auth/profile/', ProfileView.as_view(), name='auth_profile'),
 
     # Interactive Swagger UI
     path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),

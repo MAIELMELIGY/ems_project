@@ -1,9 +1,9 @@
 import { defineStore } from "pinia";
-import { login as apiLogin, refresh as apiRefresh } from "@/api/auth";
+import { login as apiLogin, refresh as apiRefresh , getProfile } from "@/api/auth";
 import type { Role } from "@/types/api";
 
 type AuthState = {
-  accessToken: string | null;
+  accessToken: string | null;g
   refreshToken: string | null;
   role: Role | null;
   email: string | null;
@@ -41,19 +41,16 @@ export const useAuthStore = defineStore("auth", {
       this.email = null;
       this.persist();
     },
-    // NOTE: This assumes your backend returns role somehow.
-    // Common options:
-    // 1) embed role in JWT claims
-    // 2) call /me/ after login
+
     async login(email: string, password: string) {
       const { access, refresh } = await apiLogin(email, password);
       this.accessToken = access;
       this.refreshToken = refresh;
       this.email = email;
 
-      // Minimal placeholder: default role if you don't have /me yet.
-      // Replace with real role fetch (recommended).
-      // this.role = this.role ?? "employee";
+     const userData = await getProfile();
+      this.email = userData.email;
+      this.role = userData.role;
 
       this.persist();
     },

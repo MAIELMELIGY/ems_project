@@ -35,7 +35,7 @@ export type Employee = {
   status: EmployeeStatus;
   name: string;
   email: string;
-  mobile: string;
+  mobile_number: string;
   address: string;
   designation: string;
   hired_on: string | null;

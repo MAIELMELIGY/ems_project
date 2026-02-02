@@ -2,7 +2,7 @@ from rest_framework import serializers
 from .models import Employee
 from organizations.models import Department
 from django.contrib.auth import get_user_model
-
+import re
 User = get_user_model()
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
@@ -45,8 +45,13 @@ class EmployeeSerializer(serializers.ModelSerializer):
         """
         Custom validation for mobile numbers.
         """
-        if not value.isdigit() or len(value) < 10:
-            raise serializers.ValidationError("Enter a valid mobile number.")
+        egypt_mobile_regex = r"^01[0125][0-9]{8}$"
+
+        if not re.match(egypt_mobile_regex, value):
+            raise serializers.ValidationError(
+                "Enter a valid Egyptian mobile number (e.g., 01012345678)."
+            )
+        
         return value
     
 

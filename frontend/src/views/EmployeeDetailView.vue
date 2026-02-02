@@ -35,7 +35,6 @@ async function act(action: "schedule_interview" | "reject" | "hire") {
   try {
     const payload: any = { action };
     if (action === "hire") {
-      // optional: ask date
       const date = prompt("Hired on (YYYY-MM-DD) leave empty for today:", "");
       if (date?.trim()) payload.hired_on = date.trim();
     }
@@ -69,7 +68,7 @@ onMounted(load);
   <div v-if="item" class="card">
     <div><b>Name:</b> {{ item.name }}</div>
     <div><b>Email:</b> {{ item.email }}</div>
-    <div><b>Mobile:</b> {{ item.mobile }}</div>
+    <div><b>mobile_number:</b> {{ item.mobile_number }}</div>
     <div><b>Designation:</b> {{ item.designation }}</div>
     <div><b>Status:</b> {{ item.status }}</div>
     <div><b>Hired on:</b> {{ item.hired_on ?? "-" }}</div>

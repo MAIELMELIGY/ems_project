@@ -11,6 +11,9 @@ from django.contrib.auth import get_user_model
 from .serializers import RegisterSerializer
 from rest_framework.permissions import AllowAny
 import logging
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 logger = logging.getLogger(__name__)
 
 from users.permissions import IsManagerOrAdmin
@@ -22,7 +25,15 @@ class RegisterView(generics.CreateAPIView):
     permission_classes = (AllowAny,)
     serializer_class = RegisterSerializer
 
+class ProfileView(APIView):
+    permission_classes = [IsAuthenticated]
 
+    def get(self, request):
+        return Response({
+            "email": request.user.email,
+            "role": request.user.role,
+            "username": request.user.username
+        })
 class EmployeeViewSet(viewsets.ModelViewSet):
     queryset = Employee.objects.all()
     serializer_class = EmployeeSerializer

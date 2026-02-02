@@ -15,7 +15,7 @@ const model = ref<Partial<Employee>>({
   department: undefined,
   name: "",
   email: "",
-  mobile: "",
+  mobile_number: "",
   address: "",
   designation: "",
 });

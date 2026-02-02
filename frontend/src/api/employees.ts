@@ -39,6 +39,6 @@ export async function transitionEmployee(
   id: number,
   payload: { action: "schedule_interview" | "reject" | "hire"; hired_on?: string }
 ): Promise<Employee> {
-  const res = await http.post(`/employees/${id}/transition/`, payload);
+  const res = await http.post(`/employees/${id}/onboard/`, payload);
   return res.data;
 }
